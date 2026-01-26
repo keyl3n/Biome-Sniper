@@ -5,6 +5,7 @@ def load_json(filename="data.json"):
     if not os.path.exists(filename):
         with open(filename, "w") as f:
             json.dump({}, f)
+            return {}
     with open(filename, "r") as f:
         return json.load(f)
 

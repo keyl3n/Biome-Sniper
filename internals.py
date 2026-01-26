@@ -1,54 +1,72 @@
+# A lot of this code was from another project and just shoved into here
+# So ignore a lot of the stuff
+# such as:
+#
+# KEYWORDS = [...]
+# keywords = []
+# .....
+# KEYWORDS = keywords
+
+print("Importing packages, this may take a moment if it's your first time running the script.")
+
 import os
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import dataMgr as d
 
 try:
-	import selfcord
+	import discord
 except:
-	os.system("py -3 -m pip install git+https://github.com/dolfies/discord.py-self@renamed#egg=selfcord.py[voice]")
+	print("Installing Selfcord...")
+	os.system("pip install -U discord.py-self")
 
 try:
-	import win10toast
+	import ducknotify
 except:
-	os.system("python -m pip install win10toast")
+	print("Installing Ducknotify...")
+	os.system("python -m pip install ducknotify")
 
 try:
 	import requests
 except:
+	print("Installing Requests...")
 	os.system("python -m pip install requests")
 
 try:
 	import urllib
 except:
+	print("Installing Urllib...")
 	os.system("python -m pip install urllib")
 
 from urllib.parse import urlparse, parse_qs, unquote
-import selfcord, asyncio, requests, webbrowser
-from win10toast import ToastNotifier
+import discord, asyncio, requests, webbrowser
+import ducknotify
 
-toast = ToastNotifier()
+print("Done")
 
 target_guilds = []
 target_channels = []
-if d.get_key("Server_SpyOnBMC", True):
-	target_guilds.append(1000444267308777543)
-	target_channels.append(1414096735013441680)
-	target_channels.append(1154374652664233994)
-	target_channels.append(1416223439613857942)
-if d.get_key("Server_SolsRNG", False):
-	target_guilds.append(1186570213077041233)
-	target_channels.append(1282542323590496277)
-	target_channels.append(1282543762425516083)
+
+treeview_data = d.get_key("treeview", {})
+for rootName in treeview_data:
+	target_guilds.append(rootName)
+	for childName in treeview_data[rootName]["children"]:
+		target_channels.append(childName)
 
 PRIVATE_SERVER_BASE = "https://www.roblox.com/games/15532962292/Sols-RNG-Eon-1-8?privateServerLinkCode="
 
 # your discord token
 TOKEN = "ImNotGivingYouMyTokenBuddy"
 
-KEYWORDS = ["GLITCHED", "DREAMSPACE"]
-
 keywords = []
+
+'''with sync_playwright() as p:
+    url = p.chromium.launch(headless=True).new_page().goto("https://www.roblox.com/share?code=1c18d2fc5d6e304c868704571a5804c2&type=Server")
+    page = p.chromium.launch(headless=True).new_page()
+    page.goto("YOUR_SHARE_URL")
+    page.wait_for_url("**LinkCode=**")
+    print(page.url)'''
+
 if(d.get_key("KEYWORD_VoidCoin", False)):
     keywords.append("VOID")
 if(d.get_key("KEYWORD_Mari", False)):
@@ -58,7 +76,11 @@ if(d.get_key("KEYWORD_Jest", False)):
 if(d.get_key("KEYWORD_Obliv", False)):
     keywords.append("OBLIV")
 if(d.get_key("KEYWORD_SandStorm", False)):
+    keywords.append("SAND")
     keywords.append("SANDSTORM")
+    keywords.append("SAND STORM")
+if(d.get_key("KEYWORD_Aurora", False)):
+    keywords.append("AURORA")
 if(d.get_key("KEYWORD_Heaven", False)):
     keywords.append("HEAV")
 if(d.get_key("KEYWORD_Starfall", False)):
@@ -71,46 +93,64 @@ if(d.get_key("KEYWORD_GLIT", False)):
     keywords.append("GLIT")
 if(d.get_key("KEYWORD_DREAM", False)):
     keywords.append("DREAM")
-TOKEN = d.get_key("DiscordToken", "")
-KEYWORDS = keywords
+if(d.get_key("KEYWORD_CYBER", False)):
+    keywords.append("CYBER")
 
-BLACKLIST = ["ENDED"]
+TOKEN = d.get_key("DiscordToken", "")
+
+blacklist = ["ENDED", "FAKE", "BAIT", "OVER", "HEAVENLY"]
+
+print(keywords)
 
 def resolve_share_link(share_url):
-	try:
-		headers = {
-			'User-Agent': 'Roblox/WinInet'
-		}
+	if "privateServerLinkCode" in share_url:
+		split1 = share_url.split("LinkCode=")[1]
+		return f"roblox://placeId=15532962292&linkCode={split1}"
+	else:
+		split1 = share_url.split("?code=")[1]
+		split2 = split1.split("&type")[0]
+		return f'roblox://navigation/share_links?code={split2}&type=Server'
 
-		response = requests.get(share_url, headers=headers, allow_redirects=True)
-		location = response.url
-		print(f"📍 Final URL after redirects: {location}")
-
-		parsed_url = urlparse(location)
-		query_params = parse_qs(parsed_url.query)
-
-		deep_link_encoded = query_params.get('af_dp', query_params.get('deep_link_value'))
-		if not deep_link_encoded:
-			print('❌ Deep link not found in redirect.')
-			return None
-
-		roblox_uri = unquote(deep_link_encoded[0])
-		print(f"🔗 Resolved Roblox URI: {roblox_uri}")
-		return roblox_uri
-
-	except Exception as e:
-		print(f"🚫 Error resolving share link: {e}")
-		return None
+def getLink(allText):
+	split1 = allText.split("https://www.roblox.com")
+	split1 = split1[len(split1)-1]
+	final = split1
+	
+	if "privateServerLinkCode" in final:
+		final = final.split("ServerLinkCode=")[1]
+		final2 = ""
+		for char in final:
+			if char.isdigit():
+				final2 = final2 + char
+			else:
+				break
+		final = f"https://www.roblox.com/games/15532962292/join?privateServerLinkCode={final2}"
+	else:
+		final = final.split("?code=")[1].split("&type")[0]
+		final = f'https://www.roblox.com/share?code={final}&type=Server'
+	return final
 
 async def handle_message(message):
 	allText = ""
+	
 	if message.content:
-		allText = allText+message.content
-	if(message.embeds):
-		title = message.embeds[0].title or ""
-		title_upper = title.upper()  # make case-insensitive
-		allText = allText+title_upper
-		allText = allText+message.embeds[0].description
+		allText = allText + message.content
+	if message.embeds:
+		for embed in message.embeds:
+			allText = allText + str(embed.title)
+			allText = allText + str(embed.description)
+	if message.components:
+		# For MultiScope 2.0.0
+		# embeds have a "Join Server" button rather than a link.
+		# I dont know if MS2 uses ActionRow or Button so I just check both
+		for component in message.components:
+			if component.type == discord.ComponentType.button:
+				allText = allText + action.url
+			else:
+				if component.type == discord.ComponentType.action_row:
+					for action in component.children:
+						if action.type == discord.ComponentType.button:
+							allText = allText + action.url
 
 	allText = allText.replace(" ", "")
 	allText = allText.replace("-", "")
@@ -119,33 +159,48 @@ async def handle_message(message):
 	allText = allText.replace("^", "")
 	allText = allText.replace("`", "")
 	
-	matched_keywords = [word for word in KEYWORDS if word in allText.upper()]
-	matched_blacklist = [word for word in BLACKLIST if word in allText.upper()]
+	print(allText)
+	
+	matched_keywords = [word for word in keywords if word in allText.upper()]
+	matched_blacklist = [word for word in blacklist if word in allText.upper()]
 
 	if matched_keywords and not matched_blacklist:
-		toast.show_toast("Biome Sniper", "Joining "+str(matched_keywords), duration=5, threaded=True)
-		shareUrl = allText.split("www.roblox.com/share")[1].split("=Server")[0]
-		deeplink = resolve_share_link("https://www.roblox.com/share"+shareUrl+"=Server")
-		#deeplink = deeplink.replace("roblox://", "ms-xbl-681f8096://")
-		print("Joining: "+deeplink)
-		webbrowser.open(deeplink)
+		sendNotif = False
+		try:
+			deeplink = resolve_share_link(getLink(allText))
+			#deeplink = deeplink.replace("roblox://", "roblox-player://")
+			os.startfile(deeplink)
+			sendNotif = True
+		except Exception as e:
+			print("No PS link found, but saw " + str(matched_keywords), f'({message.guild.id}/{message.channel.id})')
+			print(allText)
+			print("Proper error:", e)
+		if sendNotif:
+			print("Sniped " + str(matched_keywords))
+			ducknotify.notify("Biome Sniper", "Joining "+str(matched_keywords))
 
-class CustomClient(selfcord.Client):
+class CustomClient(discord.Client):
 	async def on_ready(self):
-		toast.show_toast("Biome Sniper", "Logged in as "+str(self.user), duration=5, threaded=True)
+		print("PRE log in")
+		ducknotify.notify("Biome Sniper", "Logged in as "+str(self.user))
 		print("Logged in as", self.user)
+		print(self.get_channel(1423091592775864351))
 	async def on_message(self, message):
+		global target_channels
+		global target_guilds
 		if not message.guild:
 			return
 		if not message.channel:
 			return
-		if not message.guild.id in target_guilds:
+		if not str(message.guild.id) in target_guilds:
 			return
-		if not message.channel.id in target_channels:
+		if not str(message.channel.id) in target_channels:
 			return
 		await handle_message(message)
 
 def start():
+	print("Target Servers:", target_guilds)
+	print("Target Channels:", target_channels)
 	client = CustomClient()
 	client.run(TOKEN)
 
