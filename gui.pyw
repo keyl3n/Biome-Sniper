@@ -9,7 +9,7 @@ import updater
 def start():
 	root = Tk()
 	root.geometry("500x690")
-	root.title("Sol's RNG PS Sniper")
+	root.title("BMC's Biome Sniper")
 
 	mainframe = ttk.Frame(root, padding=(10,10,10,10))
 
@@ -235,7 +235,7 @@ if updater.update_available():
 	if os.path.exists('apply-update.py'):
 		os.remove('apply-update.py')
 	print("An update is available")
-	os.system('python -c "import updater; updater.update()"')
+	os.system('python3 -c "import updater; updater.update()"')
 else:
 	if os.path.exists('apply-update.py'):
 		os.remove('apply-update.py')

@@ -2,7 +2,7 @@ import requests
 import os, zipfile
 
 DISABLE_SKIP = False
-CURRENT = "v1.0.3"
+CURRENT = "v1.0.4"
 
 # Set this environment variable to disable the auto updater in that directory
 value = os.environ.get("BIOME_SNIPER_DEV_FOLDER")
@@ -62,10 +62,10 @@ def update():
 				"if os.path.exists('updated'):\n",
 				"    shutil.rmtree('updated')\n",
 				"time.sleep(2)\n",
-				"os.system('python gui.pyw')"
+				"os.system('python3 gui.pyw')"
 			]
 			with open("apply-update.py", "w") as f:
 				f.writelines(lines)
-			os.system("python apply-update.py")
+			os.system("python3 apply-update.py")
 		else:
 			print("Up to date")
