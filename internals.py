@@ -158,20 +158,21 @@ async def handle_message(message):
 	allText = allText.replace("@", "")
 	allText = allText.replace("^", "")
 	allText = allText.replace("`", "")
-	
-	print(allText)
-	
+
 	matched_keywords = [word for word in keywords if word in allText.upper()]
 	matched_blacklist = [word for word in blacklist if word in allText.upper()]
 
 	if matched_keywords and not matched_blacklist:
+		print("Matched keywords")
 		sendNotif = False
 		try:
 			deeplink = resolve_share_link(getLink(allText))
 			#deeplink = deeplink.replace("roblox://", "roblox-player://")
 			if sys.platform == "win32":
+				print("OPENING WITH WIN32")
 				os.startfile(deeplink)
 			else:
+				print("OPENING WITH WEB BROWSER")
 				webbrowser.open(deeplink)
 			sendNotif = True
 		except Exception as e:

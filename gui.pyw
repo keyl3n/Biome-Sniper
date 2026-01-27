@@ -9,7 +9,7 @@ import updater
 def start():
 	root = Tk()
 	root.geometry("500x690")
-	root.title("BMC's Biome Sniper")
+	root.title("BMC's Biome Sniper - " + updater.CURRENT)
 
 	mainframe = ttk.Frame(root, padding=(10,10,10,10))
 
