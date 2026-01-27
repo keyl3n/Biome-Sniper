@@ -13,14 +13,31 @@ def start():
 	root.resizable(False, False)
 	sv_ttk.set_theme("dark")
 
-	mainframe = ttk.Frame(root, padding=(10,10,10,10))
+	notebook = ttk.Notebook(root)
+	notebook.pack(fill="both", expand=True)
 
-	ttk.Label(mainframe, text="━━━━━━━━━━━━━━ Message Keywords ━━━━━━━━━━━━━━").pack()
+	keywordsFrame = ttk.Frame(notebook, padding=(10,10,10,10))
+	notebook.add(keywordsFrame, text="Targets")
+
+	keywordToggleFrame = ttk.Frame(keywordsFrame)
+	keywordToggleFrame.pack(fill="x")
+
+	TOGGLES_PER_ROW = 4
+	keywordIdx = 0
+
+	for c in range(TOGGLES_PER_ROW):
+		keywordToggleFrame.columnconfigure(c, weight=1)
 
 	def add_keyword_toggle(dataKey, dText, default=False):
+		nonlocal keywordIdx
 		snipe_void_coin = BooleanVar(value=d.get_key(dataKey, default))
-		checkbox = ttk.Checkbutton(mainframe, text=dText, variable=snipe_void_coin)
-		checkbox.pack()
+		checkbox = ttk.Checkbutton(keywordToggleFrame, text=dText, variable=snipe_void_coin)
+		checkbox.grid(
+			row=(keywordIdx % TOGGLES_PER_ROW),
+			column=(keywordIdx // TOGGLES_PER_ROW),
+			sticky="w"
+		)
+		keywordIdx += 1
 
 		def void_coin_changed(*args):
 			d.set_key(dataKey, snipe_void_coin.get())
@@ -41,15 +58,23 @@ def start():
 	add_keyword_toggle("KEYWORD_DREAM", "DREAMSPACE", True)
 	add_keyword_toggle("KEYWORD_CYBER", "CYBERSPACE", True)
 
-	ttk.Label(mainframe, text="━━━━━━━━━━━━━━ Discord Token ━━━━━━━━━━━━━━").pack()
-	ttk.Label(mainframe, text="Do NOT share this!").pack()
-	ttk.Label(mainframe, text="It can be used to bypass 2FA and get in your Discord account.").pack()
-	discord_token_val = StringVar(value=d.get_key("DiscordToken", ""))
-	token_input = ttk.Entry(mainframe, textvariable=discord_token_val, show="•")
-	token_input.pack()
+	def discord_token_changed(*args):
+		d.set_key("DiscordToken", discord_token_val.get())
 
-	treeview = ttk.Treeview(mainframe, columns=("Note"))
-	treeview.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
+	discordTokenFrame = ttk.Frame(notebook, padding=(10,10,10,10))
+	notebook.add(discordTokenFrame, text="Discord Token")
+	ttk.Label(discordTokenFrame, text="Do NOT share this!").pack()
+	ttk.Label(discordTokenFrame, text="It can be used to bypass 2FA and get in your Discord account.").pack()
+	discord_token_val = StringVar(value=d.get_key("DiscordToken", ""))
+	token_input = ttk.Entry(discordTokenFrame, textvariable=discord_token_val, show="•")
+	token_input.pack(fill="x", padx=30)
+	discord_token_val.trace_add("write", discord_token_changed)
+
+	serversFrame = ttk.Frame(notebook, padding=(20,20,20,20))
+	notebook.add(serversFrame, text="Servers")
+
+	treeview = ttk.Treeview(serversFrame, columns=("Note"), height=7)
+	treeview.pack(padx=10, pady=10, fill="both")
 
 	treeview.heading("#0", text="Server/Channel ID")
 	treeview.heading("Note", text="Note")
@@ -74,7 +99,7 @@ def start():
 
 	load_treeview()
 
-	frame = ttk.Frame(mainframe)
+	frame = ttk.Frame(keywordsFrame)
 	frame.pack(fill=tk.X)
 
 	################################################
@@ -167,19 +192,11 @@ def start():
 		save_treeview()
 
 	addServerBtn = ttk.Button(frame, text="Add Server", command=add_server)
-	addServerBtn.pack(side=tk.LEFT)
+	addServerBtn.pack(side=tk.LEFT, padx=3)
 
 	addChannelBtn = ttk.Button(frame, text="Add Channel", command=add_channel)
-	addChannelBtn.pack(side=tk.LEFT)
+	addChannelBtn.pack(side=tk.LEFT, padx=3)
 	addChannelBtn.state(["disabled"])
-
-	def discord_token_changed(*args):
-		d.set_key("DiscordToken", discord_token_val.get())
-	discord_token_val.trace_add("write", discord_token_changed)
-
-	def start_macro():
-		root.destroy()
-		os.system("python3 internals.py")
 
 	def save_treeview():
 		data = {}
@@ -226,11 +243,14 @@ def start():
 
 	treeview.bind("<Button-1>", on_click)  # Left click
 
+	def start_macro():
+		root.destroy()
+		os.system("python3 internals.py")
 
-	btn = ttk.Button(mainframe, text="Start Macro", command=start_macro)
-	btn.pack()
+	btn = ttk.Button(root, text="Start Sniping", command=start_macro)
+	btn.pack(pady=10)
 
-	mainframe.pack()
+	#mainframe.pack()
 	root.update_idletasks() # calculate sizes
 	root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}") # auto-fit
 	root.mainloop()
