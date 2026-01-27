@@ -1,3 +1,5 @@
 discord.py-self
 ducknotify
 requests
+pathspec
+pathlib
