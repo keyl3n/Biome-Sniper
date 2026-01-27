@@ -13,7 +13,15 @@ import os
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import dataMgr as d
-import time
+import time, threading
+
+PAUSED = False
+
+def pause_for(dur):
+    global PAUSED
+    PAUSED = True
+    time.sleep(dur)
+    PAUSED = False
 
 try:
 	import discord
@@ -164,6 +172,9 @@ async def handle_message(message):
 	matched_blacklist = [word for word in blacklist if word in allText.upper()]
 
 	if matched_keywords and not matched_blacklist:
+		if PAUSED:
+			print("It's paused buddy")
+			return
 		print("Matched keywords")
 		sendNotif = False
 		try:
@@ -182,7 +193,9 @@ async def handle_message(message):
 			print("Proper error:", e)
 		if sendNotif:
 			print("Sniped " + str(matched_keywords))
-			ducknotify.notify("Biome Sniper", "Joining "+str(matched_keywords))
+			ducknotify.notify("Biome Sniper", "Joining "+str(matched_keywords) +", will pause for 120 seconds")
+			t = threading.Thread(target=pause_for, args=(120,))
+			t.start()
 
 class CustomClient(discord.Client):
 	async def on_ready(self):
