@@ -5,15 +5,17 @@ from tkinter import ttk
 from tkinter import messagebox
 import dataMgr as d
 import updater
+import sv_ttk
 
 def start():
 	root = Tk()
 	root.title("BMC's Biome Sniper - " + updater.CURRENT)
 	root.resizable(False, False)
+	sv_ttk.set_theme("dark")
 
 	mainframe = ttk.Frame(root, padding=(10,10,10,10))
 
-	ttk.Label(mainframe, text="-------------------- Message Keywords --------------------").pack()
+	ttk.Label(mainframe, text="━━━━━━━━━━━━━━ Message Keywords ━━━━━━━━━━━━━━").pack()
 
 	def add_keyword_toggle(dataKey, dText, default=False):
 		snipe_void_coin = BooleanVar(value=d.get_key(dataKey, default))
@@ -39,7 +41,7 @@ def start():
 	add_keyword_toggle("KEYWORD_DREAM", "DREAMSPACE", True)
 	add_keyword_toggle("KEYWORD_CYBER", "CYBERSPACE", True)
 
-	ttk.Label(mainframe, text="-------------------- Discord Token --------------------").pack()
+	ttk.Label(mainframe, text="━━━━━━━━━━━━━━ Discord Token ━━━━━━━━━━━━━━").pack()
 	ttk.Label(mainframe, text="Do NOT share this!").pack()
 	ttk.Label(mainframe, text="It can be used to bypass 2FA and get in your Discord account.").pack()
 	discord_token_val = StringVar(value=d.get_key("DiscordToken", ""))
