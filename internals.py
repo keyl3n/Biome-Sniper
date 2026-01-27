@@ -205,7 +205,7 @@ class CustomClient(discord.Client):
 def start():
 	print("Target Servers:", target_guilds)
 	print("Target Channels:", target_channels)
-	client = CustomClient()
+	client = CustomClient(intents=discord.Intents.default())
 	client.run(TOKEN)
 
 start()
