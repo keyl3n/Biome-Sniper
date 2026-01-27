@@ -2,7 +2,7 @@ import requests
 import os, zipfile
 
 DISABLE_SKIP = False
-CURRENT = "v1.0.8"
+CURRENT = "v1.0.9"
 
 # Set this environment variable to disable the auto updater in that directory
 value = os.environ.get("BIOME_SNIPER_DEV_FOLDER")
