@@ -227,10 +227,34 @@ class CustomClient(discord.Client):
 			return
 		await handle_message(message)
 
+def experimentalPatch(folder):
+	print("Cleaning", folder)
+	import shutil, os
+	for f in os.listdir(folder):
+		if "discord" in f.lower():
+			p = os.path.join(folder, f)
+			shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
+
+
 def start():
-	print("Target Servers:", target_guilds)
-	print("Target Channels:", target_channels)
-	client = CustomClient()
-	client.run(TOKEN)
+	try:
+		print("Target Servers:", target_guilds)
+		print("Target Channels:", target_channels)
+		client = CustomClient()
+		client.run(TOKEN)
+	except:
+		import site
+		selection = input("Something went wrong. Apply experimental fix? (y/n): ")
+		if selection == "y":
+			print("Applying... this may take a moment")
+			time.sleep(1)
+			sitePackages = site.getsitepackages()
+			for dir in sitePackages:
+				experimentalPatch(dir)
+			print("Reinstalling...")
+			os.system("pip install -U discord.py-self")
+			start()
+			time.sleep(1)
+			input("Fix applied!\nPress enter to restart the script.")
 
 start()
