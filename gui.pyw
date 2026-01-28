@@ -11,6 +11,7 @@ from PIL import Image, ImageTk
 import tabs.targets
 import tabs.discordToken
 import tabs.servers
+import tabs.settings
 
 def start():
 	root = Tk()
@@ -28,6 +29,7 @@ def start():
 	tabs.targets.create(notebook)
 	tabs.discordToken.create(notebook)
 	tabs.servers.create(notebook, root)
+	#tabs.settings.create(notebook)
 
 	def start_macro():
 		root.destroy()
