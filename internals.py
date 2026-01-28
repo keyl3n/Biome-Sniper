@@ -18,10 +18,10 @@ import time, threading
 PAUSED = False
 
 def pause_for(dur):
-    global PAUSED
-    PAUSED = True
-    time.sleep(dur)
-    PAUSED = False
+	global PAUSED
+	PAUSED = True
+	time.sleep(dur)
+	PAUSED = False
 
 try:
 	import discord
@@ -70,40 +70,48 @@ TOKEN = "ImNotGivingYouMyTokenBuddy"
 keywords = []
 
 '''with sync_playwright() as p:
-    url = p.chromium.launch(headless=True).new_page().goto("https://www.roblox.com/share?code=1c18d2fc5d6e304c868704571a5804c2&type=Server")
-    page = p.chromium.launch(headless=True).new_page()
-    page.goto("YOUR_SHARE_URL")
-    page.wait_for_url("**LinkCode=**")
-    print(page.url)'''
+	url = p.chromium.launch(headless=True).new_page().goto("https://www.roblox.com/share?code=1c18d2fc5d6e304c868704571a5804c2&type=Server")
+	page = p.chromium.launch(headless=True).new_page()
+	page.goto("YOUR_SHARE_URL")
+	page.wait_for_url("**LinkCode=**")
+	print(page.url)'''
 
 if(d.get_key("KEYWORD_VoidCoin", False)):
-    keywords.append("VOID")
+	keywords.append("VOID")
 if(d.get_key("KEYWORD_Mari", False)):
-    keywords.append("MARI")
+	keywords.append("MARI")
 if(d.get_key("KEYWORD_Jest", False)):
-    keywords.append("JEST")
+	keywords.append("JEST")
 if(d.get_key("KEYWORD_Obliv", False)):
-    keywords.append("OBLIV")
+	keywords.append("OBLIV")
 if(d.get_key("KEYWORD_SandStorm", False)):
-    keywords.append("SAND")
-    keywords.append("SANDSTORM")
-    keywords.append("SAND STORM")
+	keywords.append("SAND")
+	keywords.append("SANDSTORM")
+	keywords.append("SAND STORM")
 if(d.get_key("KEYWORD_Aurora", False)):
-    keywords.append("AURORA")
+	keywords.append("AURORA")
 if(d.get_key("KEYWORD_Heaven", False)):
-    keywords.append("HEAV")
+	keywords.append("HEAV")
+if(d.get_key("KEYWORD_Hell", False)):
+	keywords.append("HELL")
+if(d.get_key("KEYWORD_Windy", False)):
+	keywords.append("WIND")
+if(d.get_key("KEYWORD_Rainy", False)):
+	keywords.append("RAIN")
+#if(d.get_key("KEYWORD_Snowy", False)): # TODO: Enable after winter event
+#	keywords.append("SNOW")
 if(d.get_key("KEYWORD_Starfall", False)):
-    keywords.append("STARF")
+	keywords.append("STARF")
 if(d.get_key("KEYWORD_Corruption", False)):
-    keywords.append("CORRUP")
+	keywords.append("CORRUP")
 if(d.get_key("KEYWORD_Null", False)):
-    keywords.append("NULL")
+	keywords.append("NULL")
 if(d.get_key("KEYWORD_GLIT", False)):
-    keywords.append("GLIT")
+	keywords.append("GLIT")
 if(d.get_key("KEYWORD_DREAM", False)):
-    keywords.append("DREAM")
+	keywords.append("DREAM")
 if(d.get_key("KEYWORD_CYBER", False)):
-    keywords.append("CYBER")
+	keywords.append("CYBER")
 
 TOKEN = d.get_key("DiscordToken", "")
 
@@ -124,7 +132,7 @@ def getLink(allText):
 	split1 = allText.split("https://www.roblox.com")
 	split1 = split1[len(split1)-1]
 	final = split1
-	
+
 	if "privateServerLinkCode" in final:
 		final = final.split("ServerLinkCode=")[1]
 		final2 = ""
@@ -141,7 +149,7 @@ def getLink(allText):
 
 async def handle_message(message):
 	allText = ""
-	
+
 	if message.content:
 		allText = allText + message.content
 	if message.embeds:
